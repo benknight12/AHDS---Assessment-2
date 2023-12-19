@@ -6,25 +6,21 @@
 
 ## diet questionnaire
 library(foreign)
-diet <- read.csv("raw/FFQRAW_D.csv")
+diet <- read.xport("FFQRAW_D.XPT")
 head(diet)
-diet<-na.omit(diet)
-write.csv(diet, "clean/FFQRAW_D.csv", row.names=FALSE)
+write.csv(accel, "FFQRAW_D.csv", row.names=FALSE)
 
 ## bmi
-bmi <- read.csv("raw/BMI.csv")
-bmi<-na.omit(bmi)
+bmi <- read.xport("BMX_D.XPT")
 head(bmi)
-write.csv(bmi, "clean/BMX_D.csv", row.names=FALSE)
+write.csv(bmi, "BMX_D.csv", row.names=FALSE)
 
 # save id and bmi only from BMXBMI data
 bmi = bmi[, c('SEQN', 'BMXBMI')]
-write.csv(bmi, 'clean/BMI.csv', row.names=FALSE)
+write.csv(bmi, 'BMI.csv', row.names=FALSE)
 
 
 ## demographics
-demo <- read.csv("raw/DEMO_D.csv")
+demo <- read.xport("DEMO_D.XPT")
 head(demo)
-demo<-na.omit(demo)
-demo
-write.csv(demo, "clean/DEMO_D.csv", row.names=FALSE)
+write.csv(demo, "DEMO_D.csv", row.names=FALSE)
