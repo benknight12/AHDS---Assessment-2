@@ -1,0 +1,5 @@
+library(foreign)
+library(foreign)
+diet <- read.xport("FFQRAW_D.XPT")
+library(foreign)
+diet <- read.xport("FFQRAW_D.XPT")

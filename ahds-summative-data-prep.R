@@ -25,6 +25,5 @@ write.csv(bmi, 'clean/BMI.csv', row.names=FALSE)
 ## demographics
 demo <- read.csv("raw/DEMO_D.csv")
 head(demo)
-demo<-na.omit(demo)
-demo
+#demo<-na.omit(demo)
 write.csv(demo, "clean/DEMO_D.csv", row.names=FALSE)

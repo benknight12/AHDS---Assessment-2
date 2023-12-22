@@ -20,6 +20,8 @@ ggplot(linked_data,aes(x=WTS_FFQ))+
 ## Need to describe what food type we want to have as EV, probs BMI as Outcome is easiest
 
 ## Add section to remove extreme BMI Data points
+linked_data <- filter(linked_data, BMXBMI>10 & BMXBMI<60)
+range(linked_data$BMXBMI)
 
 
 ## Perhaps - which fruit juice has biggest effect on BMI?
@@ -44,13 +46,93 @@ g <- ggplot(tomatojuicedata,mapping= aes(x=FFQ0001,y=BMXBMI)) +
   geom_boxplot(aes(x=as.factor(FFQ0001),y=BMXBMI))  +
   geom_smooth(method="lm",formula=y~as.numeric(x), fill="#69b3a2",level=0.95) +
   geom_line(aes(x=FFQ0001,y=pred,group=1),data=cipredict,col='red')+
-  scale_y_continuous(limits=c(0,50), breaks=seq(0,100,10), expand = c(0, 0))
+  scale_y_continuous(limits=c(0,70), breaks=seq(0,100,10), expand = c(0, 0))
 g <- g + geom_ribbon(data = cipredict, aes(x = FFQ0001, ymin = LCB0.025, ymax = UCB0.975),inherit.aes = FALSE, linetype=2, alpha=0.1, fill = 'red')
 g
 
+## Create data frame with just juice data
+juicedata <- linked_data[, c("BMXBMI","FFQ0001","FFQ0002","FFQ0003","FFQ0004","FFQ0005","FFQ0006","FFQ0006A")]
+colnames(juicedata) <- c("BMI","Tomato","Orange","Apple","Grape","hundred","Other","Diet")
+head(juicedata)
 
-## Reduce the data to just the columns we care about - need to decide which these are
-trimmed_data <- linked_data[,c("SEQN","BMXBMI","RIDEXMON","SIAINTRP","FFQ0135")]
-head(trimmed_data)
+## Remove rows where we have blank or error data
+for (i in 1:length(names(juicedata))){
+  juicedata[i][juicedata[i]=="88"] <- NA
+  juicedata[i][juicedata[i]=="99"] <- NA
+}
+
+juicedata <- na.omit(juicedata)
+nrow(juicedata)
+names(juicedata)
+## Generate the linear models and subsequently the predicted values describing each juice and bmi relationship
+catmodtom <- lm(BMI ~ as.factor(Tomato),data=juicedata)
+catmodora <- lm(BMI ~ as.factor(Orange),data=juicedata)
+catmodapp <- lm(BMI ~ as.factor(Apple),data=juicedata)
+catmodgra <- lm(BMI ~ as.factor(Grape),data=juicedata)
+catmod100 <- lm(BMI ~ as.factor(hundred),data=juicedata)
+catmodoth <- lm(BMI ~ as.factor(Other),data=juicedata)
+
+juicedata$tompred <- catmodtom$fitted.values
+juicedata$orapred <- catmodora$fitted.values
+juicedata$apppred <- catmodapp$fitted.values
+juicedata$grapred <- catmodgra$fitted.values
+juicedata$pred100 <- catmod100$fitted.values
+juicedata$othpred <- catmodoth$fitted.values
+
+cipredicttom<-add_ci(data.frame(Tomato=c(1,2,3,4,5,6,7,8,9,10)), catmodtom, alpha = 0.05, names = NULL, yhatName = "pred")
+cipredictora<-add_ci(data.frame(Orange=c(1,2,3,4,5,6,7,8,9,10)), catmodora, alpha = 0.05, names = NULL, yhatName = "pred")
+cipredictapp<-add_ci(data.frame(Apple=c(1,2,3,4,5,6,7,8,9,10)), catmodapp, alpha = 0.05, names = NULL, yhatName = "pred")
+cipredictgra<-add_ci(data.frame(Grape=c(1,2,3,4,5,6,7,8,9,10)), catmodgra, alpha = 0.05, names = NULL, yhatName = "pred")
+cipredict100<-add_ci(data.frame(hundred=c(1,2,3,4,5,6,7,8,9,10)), catmod100, alpha = 0.05, names = NULL, yhatName = "pred")
+cipredictoth<-add_ci(data.frame(Other=c(1,2,3,4,5,6,7,8,9,10)), catmodoth, alpha = 0.05, names = NULL, yhatName = "pred")
+
+plotasfac <- ggplot() +
+  geom_line(aes(x=Tomato,y=pred,color="Tomato"),data=cipredicttom) +
+  geom_line(aes(x=Orange,y=pred,color="Orange"),data=cipredictora) +
+  geom_line(aes(x=Apple,y=pred,color="Apple"),data=cipredictapp) +
+  geom_line(aes(x=Grape,y=pred,color="Grape"),data=cipredictgra) +
+  geom_line(aes(x=hundred,y=pred,color="hundred"),data=cipredict100) +
+  geom_line(aes(x=Other,y=pred,color="Other"),data=cipredictoth) +
+  scale_colour_manual(name="legend", values=c("green", "orange","pink","blue","cyan","red"))
+
+plotasfac <- plotasfac +
+  geom_ribbon(data = cipredicttom, aes(x = Tomato, ymin = LCB0.025, ymax = UCB0.975),inherit.aes = FALSE, linetype=2, alpha=0.1, fill = 'red') +
+  geom_ribbon(data = cipredictora, aes(x = Orange, ymin = LCB0.025, ymax = UCB0.975),inherit.aes = FALSE, linetype=2, alpha=0.1, fill = 'blue') +
+  geom_ribbon(data = cipredictapp, aes(x = Apple, ymin = LCB0.025, ymax = UCB0.975),inherit.aes = FALSE, linetype=2, alpha=0.1, fill = 'green') +
+  geom_ribbon(data = cipredictgra, aes(x = Grape, ymin = LCB0.025, ymax = UCB0.975),inherit.aes = FALSE, linetype=2, alpha=0.1, fill = 'orange') +
+  geom_ribbon(data = cipredict100, aes(x = hundred, ymin = LCB0.025, ymax = UCB0.975),inherit.aes = FALSE, linetype=2, alpha=0.1, fill = 'pink') +
+  geom_ribbon(data = cipredictoth, aes(x = Other, ymin = LCB0.025, ymax = UCB0.975),inherit.aes = FALSE, linetype=2, alpha=0.1, fill = 'cyan')
+plotasfac
+
+
+## Now produce numeric models of linear relationship
+plotasnum <- ggplot(juicedata) +
+  geom_smooth(method="lm",mapping=aes(x=Tomato,y=BMI,color="Tomato"),formula=y~as.numeric(x), fill="red",level=0.95) +
+  geom_smooth(method="lm",mapping=aes(x=Orange,y=BMI,color="Orange"),formula=y~as.numeric(x), fill="blue",level=0.95) +
+  geom_smooth(method="lm",mapping=aes(x=Apple,y=BMI,color="Apple"),formula=y~as.numeric(x), fill="green",level=0.95) +
+  geom_smooth(method="lm",mapping=aes(x=Grape,y=BMI,color="Grape"),formula=y~as.numeric(x), fill="orange",level=0.95) +
+  geom_smooth(method="lm",mapping=aes(x=hundred,y=BMI,color="hundred"),formula=y~as.numeric(x), fill="pink",level=0.95) +
+  geom_smooth(method="lm",mapping=aes(x=Other,y=BMI,color="Other"),formula=y~as.numeric(x), fill="cyan",level=0.95) +
+  scale_colour_manual(name="legend", values=c("green", "orange","pink","blue","cyan","red"))
+  
+plotasnum
+
+head(juicedata)
+
+
+png(file="plots/factorplot.png",
+    width=600, height=350)
+plotasfac
+dev.off()
+
+
+png(file="plots/numericplot.png",
+    width=600, height=350)
+plotasnum
+dev.off()
+
 ## Add a factored version of BMI to the data set
 trimmed_data$bmigrp <- ntile(trimmed_data$BMX,10) 
+
+library(png)
+img <- readPNG("plots/factorplot.png")
