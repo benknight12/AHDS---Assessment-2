@@ -1,15 +1,15 @@
 demo <- read.csv("clean/DEMO_D.csv")
 bmi <- read.csv("clean/BMI.csv")
 diet <- read.csv("clean/FFQRAW_D.csv")
-
+library(dplyr)
+library(ggplot2)
 ## Create new data set with all three linked together by SEQN ID
 linked_data <- merge(bmi,demo,by="SEQN")
 linked_data <- merge(linked_data,diet,by="SEQN")
 
 ## Need to describe what food type we want to have as EV, probs BMI as Outcome is easiest
-
 ## Add section to remove extreme BMI Data points
-linked_data <- filter(linked_data, BMXBMI>10 & BMXBMI<60)
+linked_data <- dplyr::filter(linked_data, BMXBMI >10 & BMXBMI <60)
 ## Now do comparison of different food's 'us prevelance'
 # mac and chees 0061
 # pancakes 0059
@@ -17,7 +17,7 @@ linked_data <- filter(linked_data, BMXBMI>10 & BMXBMI<60)
 # salsa 0050
 # french fries 0047
 # lettuce leaves 0044
-relevantdata <- linked_data[,c("SEQN","BMXBMI","DMDYRSUS","FFQ0044","FFQ0047","FFQ0050","FFQ0052","FFQ0059","FFQ0061")]
+relevantdata <- linked_data[ ,c("SEQN","BMXBMI","DMDYRSUS","FFQ0044","FFQ0047","FFQ0050","FFQ0052","FFQ0059","FFQ0061")]
 colnames(relevantdata) <- c("ID","BMI","Years_In_US","Lettuce","French_Fries","Salsa","Pickles","Pancakes","Mac_Cheese_Consumed")
 relevantdata[,"Mac_Cheese_Consumed"][relevantdata[,"Mac_Cheese_Consumed"]=="88"|relevantdata[,"Mac_Cheese_Consumed"]=='99'] <-NA
 relevantdata[,"Lettuce"][relevantdata[,"Lettuce"]=="88"|relevantdata[,"Lettuce"]=='99'] <-NA
@@ -55,6 +55,7 @@ let <- let +
   geom_line(aes(x=(Years_In_US),y=fittedletcat),col="red")+
   geom_line(aes(x=(Years_In_US),y=fittedletnum),col="blue")
 let
+
 
 
 ## French Fries

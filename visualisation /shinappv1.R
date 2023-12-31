@@ -24,13 +24,20 @@ ui <- fluidPage(
 
             selectInput("Regtype",
                         "Categorical or Numeric EV in Regression model",
-                        c("Categorical","Numeric"))
+                        c("Categorical","Numeric")),
+            checkboxInput("Study",
+                          "Which study would you like to view",
+                          c("BMI Study","Length in US Study")),
+            selectInput("Regtype2",
+                        "Categorical or Numeric EV in Regression model",
+                        c("gam","glm","lm"))
         ),
 
         # Show a plot of the generated distribution
         mainPanel(
            plotOutput("plot1"),
-           plotOutput("plot2")
+           plotOutput("plot2"),
+           plotOutput("plot3"),
         )
     )
 )
@@ -39,7 +46,7 @@ ui <- fluidPage(
 server <- function(input, output) {
   
   ## Mac and cheese
-    
+      relevantdata
       modelmaccat <- lm(data = relevantdata,(Mac_Cheese_Consumed)~as.factor(Years_In_US))
       relevantdata$fittedmaccat <-modelmaccat$fitted.values
       modelmacnum <- lm(data = relevantdata,(Mac_Cheese_Consumed)~(Years_In_US))
@@ -109,49 +116,62 @@ server <- function(input, output) {
       print(cbind(coef(modelletcat),coef(modelFFcat),coef(modelsalcat),coef(modelpiccat),coef(modelpancat),coef(modelmaccat)))
       print(cbind(coef(modelletnum),coef(modelFFnum),coef(modelsalnum),coef(modelpicnum),coef(modelpannum),coef(modelmacnum)))
       
-      output$plot1 <- renderPlot({
-        food <- input$Foodtype
-        if (food == "Lettuce"){
-          let
-        } else if (food == "French Fries"){
-          FF
-        }else if (food == "Salsa"){
-          sal
-        }else if (food == "Pickles"){
-          pic
-        }else if (food == "Pancakes"){
-          pan
-        }else if (food == "Mac and Cheese"){
-          mac
+      if(input$Study == "Length in US Study"){
+        output$plot1 <- renderPlot({
+          food <- input$Foodtype
+          if (food == "Lettuce"){
+            let
+          } else if (food == "French Fries"){
+            FF
+          }else if (food == "Salsa"){
+            sal
+          }else if (food == "Pickles"){
+            pic
+          }else if (food == "Pancakes"){
+            pan
+          }else if (food == "Mac and Cheese"){
+            mac
+          }
+        })
+
+    output$plot2 <- renderPlot({
+        sumcat <- ggplot(relevantdata) +
+          geom_line(aes(x=(Years_In_US),y=fittedletcat,color="Lettuce"))+
+          geom_line(aes(x=(Years_In_US),y=fittedFFcat,color="French Fries"))+
+          geom_line(aes(x=(Years_In_US),y=fittedsalcat,color="Salsa"))+
+          geom_line(aes(x=(Years_In_US),y=fittedpiccat,color="Pickle"))+
+          geom_line(aes(x=(Years_In_US),y=fittedpancat,color="Pancake"))+
+          geom_line(aes(x=(Years_In_US),y=fittedmaccat,color="Mac and Cheese"))+
+          scale_colour_manual(name="legend", values=c("blue", "red","cyan","pink","orange","green"))
+  
+  
+        sumnum <- ggplot(relevantdata) +
+          geom_line(aes(x=(Years_In_US),y=fittedletnum,color="Lettuce"))+
+          geom_line(aes(x=(Years_In_US),y=fittedFFnum,color="French Fries"))+
+          geom_line(aes(x=(Years_In_US),y=fittedsalnum,color="Salsa"))+
+          geom_line(aes(x=(Years_In_US),y=fittedpicnum,color="Pickle"))+
+          geom_line(aes(x=(Years_In_US),y=fittedpannum,color="Pancake"))+
+          geom_line(aes(x=(Years_In_US),y=fittedmacnum,color="Mac and Cheese"))+
+          scale_colour_manual(name="legend", values=c("blue", "red","cyan","pink","orange","green"))
+        #
+        if (input$Regtype == "Categorical"){
+          sumcat
+        } else if (input$Regtype == "Numeric"){
+          sumnum
         }
-      
-})
-  output$plot2 <- renderPlot({
-      sumcat <- ggplot(relevantdata) +
-        geom_line(aes(x=(Years_In_US),y=fittedletcat,color="Lettuce"))+
-        geom_line(aes(x=(Years_In_US),y=fittedFFcat,color="French Fries"))+
-        geom_line(aes(x=(Years_In_US),y=fittedsalcat,color="Salsa"))+
-        geom_line(aes(x=(Years_In_US),y=fittedpiccat,color="Pickle"))+
-        geom_line(aes(x=(Years_In_US),y=fittedpancat,color="Pancake"))+
-        geom_line(aes(x=(Years_In_US),y=fittedmaccat,color="Mac and Cheese"))+
-        scale_colour_manual(name="legend", values=c("blue", "red","cyan","pink","orange","green"))
-
-
-      sumnum <- ggplot(relevantdata) +
-        geom_line(aes(x=(Years_In_US),y=fittedletnum,color="Lettuce"))+
-        geom_line(aes(x=(Years_In_US),y=fittedFFnum,color="French Fries"))+
-        geom_line(aes(x=(Years_In_US),y=fittedsalnum,color="Salsa"))+
-        geom_line(aes(x=(Years_In_US),y=fittedpicnum,color="Pickle"))+
-        geom_line(aes(x=(Years_In_US),y=fittedpannum,color="Pancake"))+
-        geom_line(aes(x=(Years_In_US),y=fittedmacnum,color="Mac and Cheese"))+
-        scale_colour_manual(name="legend", values=c("blue", "red","cyan","pink","orange","green"))
-      #
-      if (input$Regtype == "Categorical"){
-        sumcat
-      } else if (input$Regtype == "Numeric"){
-        sumnum
+      })
       }
-})
+  else {
+  output$plot3 <-
+    renderPlot({
+      ggplot(linked_data, aes(x=Lettuce,y=BMI, colour="blue"))  +
+        geom_point() +
+        facet_grid(sex ~ .) +
+        scale_x_log10() +
+        scale_y_log10() +
+        stat_smooth(method=input$Regtype2) 
+    })
+  }
 }
 
 # Run the application 
