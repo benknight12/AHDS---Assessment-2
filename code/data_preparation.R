@@ -30,10 +30,10 @@ linked_data <- dplyr::filter(linked_data, BMXBMI >10 & BMXBMI <80)
 ## This involves removing responses of 88 - 'blank' - or 99 -'error'. All responses should be on a scale 1-11
 
 ## Extact the relevant columns
-us_food <- linked_data[ ,c("SEQN","BMXBMI","INDHHINC","DMDYRSUS","RIDAGEMN","DMDHHSIZ","FFQ0047","FFQ0059","FFQ0059A","FFQ0061","FFQ0068","FFQ0075","FFQ0077","FFQ0081","FFQ0094","FFQ0098","FFQ0102","FFQ0103","FFQ0104","FFQ0105","FFQ0112","FFQ0114","FFQ0115","FFQ0116","FFQ0117","FFQ0120","FFQ0121")]
+us_food <- linked_data[ ,c("SEQN","BMXBMI","INDHHINC","DMDYRSUS","RIDAGEMN","DMDHHSIZ","FFQ0047","FFQ0061","FFQ0068","FFQ0075","FFQ0081","FFQ0094","FFQ0114","FFQ0115","FFQ0120")]
 
 ## Rename columns to be more informative
-colnames(us_food) <- c("ID","BMI","Household_Income","Yrs_in_US","Age(Months)",">6_in_household?","Fries","Pancakes","Pancackes_syrup","Mac_and_Cheese","Peanut_Butter","Hamburgers","Hot_Dogs","Spareribs","Fried_Fish","Pretzels","Potato_Chips","Tortilla_Chips","Popcorn","Pretzels","Ice_Cream","Cake","Cookies","Doughnuts","Sweet_Muffins","Choc_Candy","Oth_Candy")
+colnames(us_food) <- c("ID","BMI","Household_Income","Yrs_in_US","Age(Months)",">6_in_household?","Fries","Mac_and_Cheese","Peanut_Butter","Hamburgers","Spareribs","Fried_Fish","Cake","Cookies","Choc_Candy")
 
 ## Rename any values not on 1 to 11 scale as NA so can easily be omitted
 for (col in 1:length(colnames(us_food))){
@@ -45,7 +45,7 @@ for (col in 1:length(colnames(us_food))){
 us_food <- na.omit(us_food)
 ## This leaves 576 valid participants with 'full data' - still a moderate sample
 ## Now lets create the 'junk food score', this is just a sum of score on all other food factors
-us_food$jfs <- rowSums(us_food[7:27])
+us_food$jfs <- rowSums(us_food[7:length(colnames(us_food))])
 
 ## Write this to cleaned data folder
 write.csv(us_food, "clean/us_food.csv", row.names=FALSE)
