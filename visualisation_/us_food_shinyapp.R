@@ -8,7 +8,11 @@
 #
 
 library(shiny)
-
+getwd()
+setwd('..')
+if (!exists("clean_data")) {
+  clean_data <- read.csv("clean/us_food.csv")
+}
 # Define UI for application that draws a histogram
 ui <- fluidPage(
 
@@ -21,6 +25,7 @@ ui <- fluidPage(
             radioButtons("radio1",
                          label = "Toggle which is the primary food model to view",
                          choices = c("Fries",
+                                     "Pancakes",
                                      "Mac_and_Cheese",
                                      "Peanut_Butter",
                                      "Hamburgers",
@@ -34,6 +39,7 @@ ui <- fluidPage(
             radioButtons("radio2",
                          label = "1st Comparison Model",
                          choices = c("Fries",
+                                     "Pancakes",
                                      "Mac_and_Cheese",
                                      "Peanut_Butter",
                                      "Hamburgers",
@@ -47,6 +53,7 @@ ui <- fluidPage(
             radioButtons("radio3",
                          label = "2nd Comparison Model",
                          choices = c("Fries",
+                                     "Pancakes",
                                      "Mac_and_Cheese",
                                      "Peanut_Butter",
                                      "Hamburgers",
@@ -61,7 +68,12 @@ ui <- fluidPage(
             selectInput("confint",
                         "Show confidence intervals?",
                         c("Yes","No"),
-                        selected = "No")
+                        selected = "No"),
+            
+            selectInput("regressiontype",
+                        "Would you like to show a linear or categorical model?",
+                        c("Linear","Categorical"),
+                        selected = "Linear")
         ),
 
         # Show a plot of the generated distribution
@@ -76,13 +88,19 @@ ui <- fluidPage(
 server <- function(input, output) {
     library(ggplot2)
     output$originalplot <- renderPlot({
+      xvar <- clean_data$Household_Income
+      gap <-1:11
+      if (input$regressiontype == "Categorical"){
+        xvar <- as.factor(clean_data$Household_Income)
+        gap <- as.factor(gap)  
+      }
       clean_data$y1<- clean_data[,input$radio1]
-      g<- ggplot(data=clean_data,aes(x = as.factor(Household_Income),y=y1)) +
+      g<- ggplot(data=clean_data,aes(x = as.factor(xvar),y=y1)) +
         geom_boxplot()+
         labs(title="Plot demonstrating the raw data and fitted model for the amount of the 'primary food' against salary",
              x ="Salary Category", y = "Quantity of food eaten")
-      predictions <- data.frame(Index = 1:13)
-      predictions1 <- cbind(predictions,predict(lm(y1~as.factor(Household_Income),data=clean_data),method=binomial(family="logit"),newdata = data.frame(Household_Income=as.factor(1:13)),interval = "confidence"))
+      predictions <- data.frame(Index = 1:11)
+      predictions1 <- cbind(predictions,predict(lm(y1~xvar,data=clean_data),method=binomial(family="logit"),newdata = data.frame(xvar=gap),interval = "confidence"))
       g<- g +
         geom_line(data = predictions1, mapping=aes(x = Index ,y = fit))
       if(input$confint == "Yes"){
@@ -92,13 +110,19 @@ server <- function(input, output) {
       g
     })
     output$comparisonplot <- renderPlot({
+      xvar <- clean_data$Household_Income
+      gap = 1:11
+      if (input$regressiontype == "Categorical"){
+        xvar <- as.factor(clean_data$Household_Income)  
+        gap <- as.factor(gap)
+      }
       clean_data$y1<- clean_data[,input$radio1]
       clean_data$y2<- clean_data[,input$radio2]
       clean_data$y3<- clean_data[,input$radio3]
-      predictions <- data.frame(Index = 1:13)
-      predictions1 <- cbind(predictions,predict(lm(y1~as.factor(Household_Income),data=clean_data),method=binomial(family="logit"),newdata = data.frame(Household_Income=as.factor(1:13)),interval = "confidence"))
-      predictions2 <- cbind(predictions,predict(lm(y2~as.factor(Household_Income),data=clean_data),method=binomial(family="logit"),newdata = data.frame(Household_Income=as.factor(1:13)),interval = "confidence"))
-      predictions3 <- cbind(predictions,predict(lm(y3~as.factor(Household_Income),data=clean_data),method=binomial(family="logit"),newdata = data.frame(Household_Income=as.factor(1:13)),interval = "confidence"))
+      predictions <- data.frame(Index = 1:11)
+      predictions1 <- cbind(predictions,predict(lm(y1~xvar,data=clean_data),method=binomial(family="logit"),newdata = data.frame(xvar=gap),interval = "confidence"))
+      predictions2 <- cbind(predictions,predict(lm(y2~xvar,data=clean_data),method=binomial(family="logit"),newdata = data.frame(xvar=gap),interval = "confidence"))
+      predictions3 <- cbind(predictions,predict(lm(y3~xvar,data=clean_data),method=binomial(family="logit"),newdata = data.frame(xvar=gap),interval = "confidence"))
       g <- ggplot() +
         geom_line(data = predictions1, mapping=aes(x = Index ,y = fit))+
         labs(title="Plot demonstrating the relationships between amounts of different foods eaten and Salary",
@@ -130,3 +154,4 @@ server <- function(input, output) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)
+
