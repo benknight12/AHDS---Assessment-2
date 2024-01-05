@@ -8,7 +8,6 @@
 #
 
 library(shiny)
-getwd()
 setwd('..')
 if (!exists("clean_data")) {
   clean_data <- read.csv("clean/us_food.csv")
