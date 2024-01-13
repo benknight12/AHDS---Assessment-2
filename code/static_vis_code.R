@@ -129,9 +129,9 @@ h <- h +
   theme(plot.title = element_text(hjust = 0.5))
 
 ## Save the plots to 'visualisations', as .jpegs, so that they can be used in the report
-jpeg(file="visualisations/jfs_bmi_plot.jpeg")
+jpeg(file="visualisation/jfs_bmi_plot.jpeg")
 h
 dev.off()
-jpeg(file="visualisations/food_household_plot.jpeg")
+jpeg(file="visualisation/food_household_plot.jpeg")
 g
 dev.off()
