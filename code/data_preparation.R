@@ -1,4 +1,5 @@
 ## Read in raw data and lode relevant libraries
+print(getwd())
 demo <- read.csv("raw/DEMO_D.csv")
 bmi <- read.csv("raw/BMI.csv")
 diet <- read.csv("raw/FFQRAW_D.csv")
@@ -8,7 +9,7 @@ library(dplyr)
 
 ## First stage is to create a very large linked dataset
 
-names(bmi)
+# names(bmi)
 ## The relevant factors we want to take from the raw data (excluding foods) are: BMI - BMXBMI, Household Income - INDHHINC, Age(Months) - RIDAGEMN, # In household - DMDHHSIZ 
 # Extract these from the 'demo' database
 trimmed_demo <- demo[,c("SEQN","INDHHINC","RIDAGEMN","DMDHHSIZ")]
@@ -47,9 +48,8 @@ us_food <- na.omit(us_food)
 ## This leaves 5306 valid participants with 'full data' - still a moderate sample
 ## Now lets create the 'junk food score', this is just a sum of score on all other food factors
 us_food$jfs <- rowSums(us_food[7:length(colnames(us_food))])
-dim(us_food)
 
-summary(us_food$jfs)
+# summary(us_food$jfs)
 ## Write this to cleaned data folder
 write.csv(us_food, "clean/us_food.csv", row.names=FALSE)
 
