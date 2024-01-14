@@ -88,9 +88,9 @@ ui <- fluidPage(
         mainPanel(
             strong("Study Investigating the Effect on Salary on the Amount of Different 'Junk' food eaten"),
             plotOutput("originalplot"),
-            p("Our first plot investigates allows you to observe the raw data of any junk food type included in the study
+            p("Our first plot allows you to investigate the raw data of any junk food type included in the study
               against household income. We display the raw data as box plots and fit on top a regression line of the 
-              type choosen in the drop down menu (linear or categorical). The data is displated for the 'primary food'
+              type choosen in the drop down menu (linear or categorical). The data is displayed for the 'primary food'
               which is choosen in the first set of radio buttons. This theme can be investigated further in our second 
               plot. \n"),
             plotOutput("comparisonplot"),
@@ -104,7 +104,7 @@ ui <- fluidPage(
                 tags$li("The amount eaten of the following foods show a negative relationship with household income: 
                         Fries, Pancakes, Mac and Cheese, Hamburgers, Spareribs, Fried Fish and Cake. A positive trend is
                         observed for Peanut Butter, Cookies and Chocolate Candy."),
-                tags$li("The least commonly eaten foods were Spareribs and Fried Fish where most common was Fries"),
+                tags$li("The least commonly eaten foods were Spareribs and Fried Fish where most common was Fries."),
                 tags$li("We observe a very similar trend between Cookies and Chocolate candy, which dues to the 
                         similarity in the product is plausible."),
                 tags$li("However, we also observe very similar trends in both Fried Fish and Spareribs despite not 

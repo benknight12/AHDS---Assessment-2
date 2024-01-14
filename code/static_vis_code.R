@@ -80,6 +80,8 @@ for (i in 1:10){
 preds<- data.frame(grouped = c(1,2,3,4,5,6,7,8,9,10),Household_Income=means)
 ## Use the predict function to predict from our model
 preds$bmipreds <- predict(jfsbmilinmod,newdata=preds,interval="confidence")
+cbind(coef(jfsbmilinmod),confint(jfsbmilinmod))
+summary(jfsbmilinmod)
 
 ## For method 2 we will stratify accross household income and take a weighted average of the
 ## predictions. 
