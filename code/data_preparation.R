@@ -10,9 +10,9 @@ library(dplyr)
 ## First stage is to create a very large linked dataset
 
 # names(bmi)
-## The relevant factors we want to take from the raw data (excluding foods) are: BMI - BMXBMI, Household Income - INDHHINC, Age(Months) - RIDAGEMN, # In household - DMDHHSIZ 
+## The relevant factors we want to take from the raw data (excluding foods) are: BMI - BMXBMI, Household Income - INDHHINC
 # Extract these from the 'demo' database
-trimmed_demo <- demo[,c("SEQN","INDHHINC","RIDAGEMN","DMDHHSIZ")]
+trimmed_demo <- demo[,c("SEQN","INDHHINC")]
 ## Then we want the following codes for junk food: (FFQ____)
 # french fries 0047, pancakes, mac and cheese 0061, peanut butter 0068, hamburgers 0075, spareribs 0081, fried fish 0094, cake 0114, cookies 0115, chocolate candy 0120
 # Extract these from the 'diet' database
@@ -29,7 +29,7 @@ linked_data <- merge(linked_data,trimmed_diet,by="SEQN")
 us_food <- dplyr::filter(linked_data, BMXBMI >10 & BMXBMI <80)
 
 ## Rename columns to be more informative
-colnames(us_food) <- c("ID","BMI","Household_Income","Age(Months)","Number_in_household?","Fries","Pancakes","Mac_and_Cheese","Peanut_Butter","Hamburgers","Spareribs","Fried_Fish","Cake","Cookies","Choc_Candy")
+colnames(us_food) <- c("ID","BMI","Household_Income","Fries","Pancakes","Mac_and_Cheese","Peanut_Butter","Hamburgers","Spareribs","Fried_Fish","Cake","Cookies","Choc_Candy")
 
 ## Now we produce the us food data set and remove any non-informative responses
 ## This involves removing responses of 88 - 'blank' - or 99 -'error'. All responses should be on a scale 1-11
