@@ -38,7 +38,7 @@ colnames(us_food) <- c("ID","BMI","Household_Income","Fries","Pancakes","Mac_and
 ## Rename any values not on 1 to 11 scale as NA so can easily be omitted
 for (col in 1:length(colnames(us_food))){
   ## Filter our extra 2 for this column
-  if (col > 5){
+  if (col > 3){
     us_food[,col][us_food[,col]=="77" | us_food[,col]=="88" | us_food[,col]=="99" | us_food[,col]=="."] <- NA
   }else if(col == 3){
     us_food[,col][us_food[,col]=="12" | us_food[,col]=="13" | us_food[,col]=="77" | us_food[,col]=="88" | us_food[,col]=="99" | us_food[,col]=="."] <- NA

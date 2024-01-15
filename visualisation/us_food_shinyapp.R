@@ -105,8 +105,8 @@ ui <- fluidPage(
                         Fries, Pancakes, Mac and Cheese, Hamburgers, Spareribs, Fried Fish and Cake. A positive trend is
                         observed for Peanut Butter, Cookies and Chocolate Candy."),
                 tags$li("The least commonly eaten foods were Spareribs and Fried Fish where most common was Fries."),
-                tags$li("We observe a very similar trend between Cookies and Chocolate candy, which dues to the 
-                        similarity in the product is plausible."),
+                tags$li("We observe a very similar trend between Cookies and Chocolate candy, which is plausible due to the 
+                        similarity in the product."),
                 tags$li("However, we also observe very similar trends in both Fried Fish and Spareribs despite not 
                         being similar products."),
                 tags$li("The increase in peanut butter with household income could be explained by price, it is
@@ -124,7 +124,8 @@ ui <- fluidPage(
               regression) of -0.112 (95% CI: -0.207, -0.017), with a corresponding p-value of 0.021. Therefore we 
               conclude there is reasonable evidence that an individual with higher hosehold salary will have a lower 
               overall 'Junk Food Score'. The size of this effect seems somewhat small as some junk foods actually 
-              increase with household income. You can experiment with which there are in the first two plots.")
+              increase with household income. You can experiment to investigate the reasons for this further, by 
+              using the first two plots.")
         )
     )
 )

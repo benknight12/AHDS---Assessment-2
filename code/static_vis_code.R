@@ -80,8 +80,10 @@ for (i in 1:10){
 preds<- data.frame(grouped = c(1,2,3,4,5,6,7,8,9,10),Household_Income=means)
 ## Use the predict function to predict from our model
 preds$bmipreds <- predict(jfsbmilinmod,newdata=preds,interval="confidence")
-cbind(coef(jfsbmilinmod),confint(jfsbmilinmod))
-summary(jfsbmilinmod)
+
+## Outputs we require for report write up
+#cbind(coef(jfsbmilinmod),confint(jfsbmilinmod))
+#summary(jfsbmilinmod)
 
 ## For method 2 we will stratify accross household income and take a weighted average of the
 ## predictions. 
@@ -130,7 +132,7 @@ h <- h +
        x ="Junk-Food-Score (grouped into 10 sets)", y = "BMI")+
   theme(plot.title = element_text(hjust = 0.5))
 
-## Save the plots to 'visualisations', as .jpegs, so that they can be used in the report
+## Save the plots to 'visualisation', as .jpegs, so that they can be used in the report
 jpeg(file="visualisation/jfs_bmi_plot.jpeg")
 h
 dev.off()
